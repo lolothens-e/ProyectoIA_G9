@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import shap
@@ -36,21 +38,28 @@ class SHAPExplainer:
     """Genera una figura de matplotlib con el gráfico Summary de SHAP."""
     shap_values, muestra = self.calcular_explicabilidad(X_sample, n_samples)
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(11, 7))
 
-    if isinstance(shap_values, list):
-      # Tomamos la clase 2 (Alto Riesgo) si es lista multiclase
-      idx = min(2, len(shap_values) - 1)
-      shap_vals_plot = shap_values[idx]
-    else:
-      shap_vals_plot = shap_values
+    nombres_clases = ["Deserción baja", "Deserción media", "Deserción alta"]
 
     shap.summary_plot(
-        shap_vals_plot,
+        shap_values,
         muestra,
         feature_names=self.feature_names,
+        class_names=nombres_clases,
         show=False,
         plot_type="bar",
     )
+
+    # Position the legend outside the bar diagram on the right to prevent overlap
+    plt.legend(
+        title="Nivel de Riesgo",
+        labels=nombres_clases,
+        bbox_to_anchor=(1.05, 1),
+        loc="upper left",
+        borderaxespad=0.0,
+    )
+
+
     plt.tight_layout()
     return fig

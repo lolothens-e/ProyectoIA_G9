@@ -13,6 +13,7 @@ __pycache__/
 
 # Archivos pesados de datos (superan límites de GitHub de 100MB)
 data/raw/*.xlsx
+data/raw/*.csv
 
 # Archivos de sistema y VS Code / IDE
 .vscode/

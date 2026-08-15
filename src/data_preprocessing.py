@@ -17,8 +17,15 @@ class DataPreprocessor:
       self, sample_size: int = 5000
   ) -> pd.DataFrame:
     """Carga y fusiona datasets asegurando identificadores limpios y sufijos claros para prevenir data leakage."""
-    df_inicio = pd.read_excel(self.ruta_inicio, nrows=sample_size)
-    df_fin = pd.read_excel(self.ruta_fin, nrows=sample_size)
+    csv_inicio = self.ruta_inicio.replace(".xlsx", ".csv")
+    csv_fin = self.ruta_fin.replace(".xlsx", ".csv")
+
+    if os.path.exists(csv_inicio) and os.path.exists(csv_fin):
+      df_inicio = pd.read_csv(csv_inicio, nrows=sample_size)
+      df_fin = pd.read_csv(csv_fin, nrows=sample_size)
+    else:
+      df_inicio = pd.read_excel(self.ruta_inicio, nrows=sample_size)
+      df_fin = pd.read_excel(self.ruta_fin, nrows=sample_size)
 
     # Limpieza de nombres de columnas
     df_inicio.columns = df_inicio.columns.str.strip()
@@ -43,9 +50,11 @@ class DataPreprocessor:
     on_cols = ["AMIE"]
     if "Año_lectivo" in df_inicio.columns and "Año_lectivo" in df_fin.columns:
       df_inicio["Año_lectivo"] = (
-          df_inicio["Año_lectivo"].astype(str).str.strip()
+          df_inicio["Año_lectivo"].astype(str).str.replace(" Inicio", "", case=False).str.strip()
       )
-      df_fin["Año_lectivo"] = df_fin["Año_lectivo"].astype(str).str.strip()
+      df_fin["Año_lectivo"] = (
+          df_fin["Año_lectivo"].astype(str).str.replace(" Fin", "", case=False).str.strip()
+      )
       on_cols.append("Año_lectivo")
 
     # MERGE con sufijos explícitos (_inicio vs _fin)
@@ -152,12 +161,6 @@ class DataPreprocessor:
         "Total_Estudiantes_inicio",
         "Total_Estudiantes",
         "Estudiantes_con_discapacidad",
-        "EMestiza",
-        "EIndigena",
-        "EMontubio",
-        "EAfroecuatoriano",
-        "EBlanca",
-        "EKIchwa",
     ]
 
     cols_prohibidas_leakage = [
