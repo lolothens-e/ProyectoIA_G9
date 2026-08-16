@@ -11,20 +11,16 @@ if hasattr(sys.stdout, 'reconfigure'):
 print("🚀 Probando el Módulo de Explicabilidad (SHAP)...")
 
 # 1. Cargar datos de prueba
-ruta_inicio = (
-    "data/raw/1Registro-Administrativo-Historico_2009-202X-Inicio.xlsx"
-)
-ruta_fin = "data/raw/2Registro-Administrativo-Historico_2009-2024-Fin.xlsx"
+ruta_inicio = "data/raw/1Registro-Administrativo-Historico_2009-202X-Inicio.csv"
+ruta_fin = "data/raw/2Registro-Administrativo-Historico_2009-2024-Fin.csv"
 
 preprocesador = DataPreprocessor(ruta_inicio, ruta_fin)
-df_raw = preprocesador.cargar_y_fusionar_datasets(sample_size=1500)
+df_raw = preprocesador.cargar_y_fusionar_datasets(sample_size=500, persistent_sample=True)
 df_clean = preprocesador.limpiar_y_calcular_abandono(df_raw)
 df_final = preprocesador.discretizar_riesgo(df_clean)
 X, y = preprocesador.transformar_caracteristicas(df_final, is_training=True)
 
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.20, random_state=42, stratify=y
-)
+X_train, X_test, y_train, y_test, info_split = preprocesador.dividir_por_tiempo(df_final, X, y)
 
 # 2. Entrenar MLP rápido
 print("🧠 Entrenando MLP...")

@@ -1,0 +1,7 @@
+Modelo,Accuracy,Precision (Macro),Recall (Macro),F1-Score (Macro)
+MLP (Propio - Keras),0.6743,0.5624,0.5555,0.5587
+Random Forest,0.63,0.5591,0.6322,0.5703
+Gradient Boosting,0.6796,0.5714,0.5617,0.5654
+SVM (RBF),0.6501,0.5888,0.6285,0.5605
+Regresión Logística,0.6649,0.5816,0.6047,0.5671
+KNN,0.6273,0.5454,0.5431,0.5403

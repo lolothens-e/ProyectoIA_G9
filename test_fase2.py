@@ -1,3 +1,4 @@
+import sys
 import pandas as pd
 from sklearn.metrics import (
     accuracy_score,
@@ -9,15 +10,16 @@ from src.baseline_evaluator import BaselineEvaluator
 from src.data_preprocessing import DataPreprocessor
 from src.mlp_classifier import MLPClassifier
 
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
+
 print("🚀 Ejecutando Fase 2 con División Temporal y Control de Leakage...")
 
-ruta_inicio = (
-    "data/raw/1Registro-Administrativo-Historico_2009-202X-Inicio.xlsx"
-)
-ruta_fin = "data/raw/2Registro-Administrativo-Historico_2009-2024-Fin.xlsx"
+ruta_inicio = "data/raw/1Registro-Administrativo-Historico_2009-202X-Inicio.csv"
+ruta_fin = "data/raw/2Registro-Administrativo-Historico_2009-2024-Fin.csv"
 
 preprocesador = DataPreprocessor(ruta_inicio, ruta_fin)
-df_raw = preprocesador.cargar_y_fusionar_datasets(sample_size=3500)
+df_raw = preprocesador.cargar_y_fusionar_datasets(sample_size=1000, persistent_sample=True)
 df_clean = preprocesador.limpiar_y_calcular_abandono(df_raw)
 df_final = preprocesador.discretizar_riesgo(df_clean)
 

@@ -15,6 +15,9 @@ __pycache__/
 data/raw/*.xlsx
 data/raw/*.csv
 
+# Modelos pesados que superan los límites de Git (>100MB)
+models/baseline_models.pkl
+
 # Archivos de sistema y VS Code / IDE
 .vscode/
 .idea/
