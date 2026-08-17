@@ -40,56 +40,41 @@ st.markdown("""
 
     /* Ajuste de contenedor principal */
     .block-container {
-        padding-top: 1.5rem !important;
+        padding-top: 4.5rem !important;
         padding-bottom: 2rem !important;
-        max-width: 1200px !important;
+        max-width: 100% !important;
     }
     
-    /* 2. Header Institucional Mineduc */
-    .mineduc-header {
-        background-color: #0B2545;
-        color: #FFFFFF;
-        padding: 24px 32px 18px 32px;
-        border-radius: 8px 8px 0 0;
-        margin-bottom: 0px;
-        box-shadow: 0 4px 12px rgba(11, 37, 69, 0.15);
+    /* Ocultar el símbolo de enlace en los títulos */
+    a.header-anchor {
+        display: none !important;
     }
-    .mineduc-header-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 4px;
+    [data-testid="stHeaderActionElements"] {
+        display: none !important;
     }
-    .mineduc-title {
-        font-size: 1.65rem;
-        font-weight: 800;
+    
+    /* 2. Logo Corner (PREDIEC) */
+    .prediec-logo-container {
+        display: inline-block;
+        margin-bottom: 20px;
+        text-align: left;
+    }
+    .prediec-logo-text {
+        font-size: 1.85rem;
+        font-weight: 900;
         letter-spacing: -0.5px;
-        color: #FFFFFF !important;
+        color: #0B2545 !important;
         margin: 0;
         text-transform: uppercase;
+        font-family: 'Inter', sans-serif !important;
+        line-height: 1.0;
     }
-    .mineduc-subtitle {
-        font-size: 0.95rem;
-        color: #93C5FD !important;
-        font-weight: 500;
-        margin-top: 4px;
-    }
-    .mineduc-tag {
-        background-color: #007791 !important;
-        color: #FFFFFF !important;
-        padding: 6px 16px !important;
-        border-radius: 20px !important;
-        font-size: 0.85rem !important;
-        font-weight: 700 !important;
-        border: 1px solid rgba(255, 255, 255, 0.3) !important;
-    }
-    
-    /* Franja Tricolor Bandera de Ecuador */
-    .ecuador-stripe {
-        height: 5px;
+    .prediec-flag-stripe {
+        height: 4px;
         background: linear-gradient(90deg, #FFCC00 0%, #FFCC00 50%, #003399 50%, #003399 75%, #FF0000 75%, #FF0000 100%);
-        margin-bottom: 20px;
-        border-radius: 0 0 6px 6px;
+        margin-top: 5px;
+        border-radius: 2px;
+        width: 100%;
     }
 
     /* 3. Contenedor de Pestañas (Barra de Navegación Funcional MINEDUC) */
@@ -359,48 +344,18 @@ st.markdown("""
         margin-bottom: 16px;
     }
 
-    /* Pie de página institucional (Footer) */
-    .mineduc-footer {
-        background-color: #0B2545;
-        color: #FFFFFF;
-        padding: 24px 32px;
-        border-radius: 8px;
-        margin-top: 40px;
-        font-size: 0.85rem;
-    }
-    .mineduc-footer-links {
-        display: flex;
-        justify-content: space-around;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-        padding-bottom: 14px;
-        margin-bottom: 14px;
-        flex-wrap: wrap;
-        gap: 12px;
-    }
-    .mineduc-footer-links a {
-        color: #93C5FD;
-        text-decoration: none;
-        font-weight: 600;
-    }
-    .mineduc-footer-info {
-        text-align: center;
-        color: #CBD5E1;
-        line-height: 1.6;
-    }
-</style>
 
-<!-- Banner Superior Institucional (Sin Logos Oficiales) -->
-<div class="mineduc-header">
-    <div class="mineduc-header-top">
-        <div>
-            <h1 class="mineduc-title">SISTEMA DE ALERTA DE DESERCIÓN ESCOLAR</h1>
-            <div class="mineduc-subtitle">Plataforma Tecnológica de Analítica Predictiva y Evaluación de Riesgo Educativo</div>
-        </div>
-        <div class="mineduc-tag">Módulo Analítico IA</div>
-    </div>
-</div>
-<div class="ecuador-stripe"></div>
+</style>
 """, unsafe_allow_html=True)
+
+# Render logo in the sidebar atop of the mineduc-estadisticas section
+with st.sidebar:
+    st.markdown("""
+    <div class="prediec-logo-container">
+        <div class="prediec-logo-text">PREDIEC</div>
+        <div class="prediec-flag-stripe"></div>
+    </div>
+    """, unsafe_allow_html=True)
 
 st.sidebar.title("MINEDUC - Analítica")
 stats_placeholder = st.sidebar.container()
@@ -414,12 +369,12 @@ pretrained_results_path = "models/evaluation_results.csv"
 
 # Verificación específica para baseline_models.pkl (excluido de git por tamaño >100MB)
 if not os.path.exists(pretrained_baselines_path):
-    st.warning("⚠️ No se encontró localmente el archivo de modelos base (`models/baseline_models.pkl`).")
-    st.info("📦 Debido a las políticas de tamaño de Git (>100MB), este archivo se encuentra alojado externamente en Google Drive.")
+    st.warning("No se encontró localmente el archivo de modelos base (`models/baseline_models.pkl`).")
+    st.info("Debido a las políticas de tamaño de Git (>100MB), este archivo se encuentra alojado externamente en Google Drive.")
     
     col_dl1, col_dl2 = st.columns([1, 1])
     with col_dl1:
-        if st.button("⬇️ Descargar automáticamente desde Google Drive", use_container_width=True, type="primary"):
+        if st.button("Descargar automáticamente desde Google Drive", use_container_width=True, type="primary"):
             from src.download_utils import download_file_from_google_drive
             bar = st.progress(0, text="Iniciando descarga...")
             def _update_progress(pct):
@@ -427,14 +382,14 @@ if not os.path.exists(pretrained_baselines_path):
                 bar.progress(pct_int, text=f"Descargando baseline_models.pkl ({pct_int}%)...")
             try:
                 download_file_from_google_drive("1MpKowch9JG9Qx4AU1JD8D2FUfORM1PXF", pretrained_baselines_path, progress_callback=_update_progress)
-                st.success("✅ ¡Descarga completada con éxito! Recargando aplicación...")
+                st.success("¡Descarga completada con éxito! Recargando aplicación...")
                 st.rerun()
             except Exception as e:
                 st.error(f"Error al descargar automáticamente: {e}")
     with col_dl2:
         st.markdown("""
         **Descarga Manual:**  
-        👉 [Descargar desde Google Drive](https://drive.google.com/file/d/1MpKowch9JG9Qx4AU1JD8D2FUfORM1PXF/view?usp=drive_link)  
+        [Descargar desde Google Drive](https://drive.google.com/file/d/1MpKowch9JG9Qx4AU1JD8D2FUfORM1PXF/view?usp=drive_link)  
         *(Guarda el archivo en la carpeta `models/` con el nombre exacto `baseline_models.pkl`)*
         """)
     st.stop()
@@ -482,9 +437,6 @@ if has_pretrained:
     evaluador.modelos_entrenados = pickle.load(f)
     
   df_baseline = pd.read_csv(pretrained_results_path)
-  
-  st.sidebar.success("Base de datos y modelos institucionales listos.")
-  st.sidebar.info("Criterio de Validación: Hold-Out Temporal (Train: < 2024-2025 | Test: >= 2024-2025)")
 else:
   st.error("No se encontraron los modelos pre-entrenados en `models/`. Ejecute `python src/export_pretrained_models.py`.")
   st.stop()
@@ -496,7 +448,7 @@ with stats_placeholder:
   st.metric("Planteles Únicos", f"{df_final['AMIE'].nunique():,}")
   tasa_prom = df_final['Tasa_Abandono'].dropna().mean() * 100
   st.metric("Tasa Promedio Abandono", f"{tasa_prom:.2f}%")
-  st.divider()
+
 
 # Diccionario unificado de modelos para inferencia dinámica
 diccionario_modelos = {
@@ -541,28 +493,8 @@ tab1, tab2, tab3 = st.tabs(
 # TAB 1: Semáforo de Riesgo, Selección de Año y Predicción T+1
 # -------------------------------------------------------------
 with tab1:
-  st.markdown("""
-  <div class="services-grid">
-      <div class="service-card">
-          <h4>🔍 1. Búsqueda Institucional</h4>
-          <p>Localice el plantel por código AMIE o nombre</p>
-      </div>
-      <div class="service-card">
-          <h4>📅 2. Selección de Año Base</h4>
-          <p>Consulte registros históricos consolidados (≤ T)</p>
-      </div>
-      <div class="service-card">
-          <h4>🤖 3. Selección de Modelo IA</h4>
-          <p>Compare predicciones entre MLP y 5 baselines</p>
-      </div>
-      <div class="service-card">
-          <h4>🔮 4. Predicción Preventiva</h4>
-          <p>Proyecte el riesgo de deserción del año siguiente (T+1)</p>
-      </div>
-  </div>
-  """, unsafe_allow_html=True)
-
   st.subheader("Búsqueda y Selección de Unidad Educativa")
+  nombre_escuela_placeholder = st.empty()
 
   col_busq1, col_busq2 = st.columns([2, 1])
   with col_busq1:
@@ -602,104 +534,86 @@ with tab1:
   df_inst_todos = df_final[df_final["AMIE"] == amie_activo].sort_values("Año_lectivo").copy()
   nombre_inst = df_inst_todos["Nombre_Institucion"].iloc[0] if "Nombre_Institucion" in df_inst_todos.columns else "Institución Educativa"
 
-  st.success(f"🏫 Institución Seleccionada: **{nombre_inst}** (Código AMIE: **{amie_activo}**)")
+  nombre_escuela_placeholder.markdown(f"**Institución Seleccionada:** {nombre_inst} (Código AMIE: {amie_activo})")
 
   st.divider()
 
   # -------------------------------------------------------------
-  # 1. SELECTOR DE AÑO Y TABLA DE DATOS REALES (≤ Año Seleccionado)
+  # 1. HISTORIAL OPERATIVO CONSOLIDADO (Todos los años)
   # -------------------------------------------------------------
-  st.subheader("1. Lógica de Registros Históricos y Selección de Año Base")
+  st.subheader("1. Data real disponible")
 
+  # Listas de años disponibles para selectores posteriores
   anios_inst = sorted(df_inst_todos["Año_lectivo"].unique().tolist())
   anios_todos_dataset = sorted(df_final["Año_lectivo"].unique().tolist())
 
-  # Layout con selector de año y selector de modelo
-  col_s1, col_s2 = st.columns([1, 1])
+  # Selector de período para la Ficha Técnica de la Sección 1
+  anio_base_ficha = st.selectbox(
+      "Seleccione el período de análisis para la Ficha Técnica:",
+      options=anios_inst,
+      index=len(anios_inst) - 1,  # Por defecto el año más reciente
+      key="periodo_ficha_tecnica",
+      help="Permite elegir el período del cual se mostrarán las métricas de resumen y características en la Ficha Técnica."
+  )
 
-  with col_s1:
-    idx_default_anio = len(anios_inst) - 2 if len(anios_inst) >= 2 else 0
-    anio_base_seleccionado = st.selectbox(
-        "📅 Seleccione el Año Base de Análisis (T):",
-        options=anios_inst,
-        index=idx_default_anio,
-        help="La tabla inferior solo mostrará los datos reales registrados hasta este año seleccionado para evitar cualquier fuga de información."
-    )
+  # Ficha Técnica Institucional del Año seleccionado
+  registro_reciente = df_inst_todos[df_inst_todos["Año_lectivo"] == anio_base_ficha].iloc[0]
+  st.markdown(f"#### Ficha Técnica de la Institución — Periodo {anio_base_ficha}")
 
-  with col_s2:
-    modelo_seleccionado_nombre = st.selectbox(
-        "🤖 Seleccione el Modelo de Inteligencia Artificial para la Predicción:",
-        options=list(diccionario_modelos.keys()),
-        index=0,
-        help="Permite generar y comparar la predicción utilizando cualquiera de los modelos evaluados."
-    )
-
-  # Filtrar datos históricos reales HASTA el año base seleccionado (<= anio_base_seleccionado)
-  df_historico_visible = df_inst_todos[df_inst_todos["Año_lectivo"] <= anio_base_seleccionado].copy()
-  registro_actual = df_historico_visible.iloc[-1]
-
-  # -------------------------------------------------------------
-  # Ficha Técnica Institucional del Año Base Seleccionado
-  # -------------------------------------------------------------
-  st.markdown(f"#### 🏛️ Ficha Técnica de la Institución — Periodo {anio_base_seleccionado}")
-
-  # Métricas numéricas del año base
-  docentes = int(registro_actual["Total_Docentes"]) if pd.notnull(registro_actual.get("Total_Docentes")) else 0
-  admin = int(registro_actual["Total_Administrativos"]) if pd.notnull(registro_actual.get("Total_Administrativos")) else 0
-  estud = int(registro_actual["Total_Estudiantes_inicio"]) if pd.notnull(registro_actual.get("Total_Estudiantes_inicio")) else 0
-  discap = int(registro_actual["Estudiantes_con_discapacidad"]) if pd.notnull(registro_actual.get("Estudiantes_con_discapacidad")) else 0
+  # Métricas numéricas del año más reciente
+  estud_ini = int(registro_reciente["Total_Estudiantes_inicio"]) if pd.notnull(registro_reciente.get("Total_Estudiantes_inicio")) else 0
+  estud_fin = int(registro_reciente["Total_Estudiantes_Fin"]) if pd.notnull(registro_reciente.get("Total_Estudiantes_Fin")) else 0
+  tasa_ab = registro_reciente.get("Tasa_Abandono")
+  tasa_ab_str = f"{tasa_ab*100:.2f}%" if pd.notnull(tasa_ab) else "Pendiente"
+  
+  riesgo_val = registro_reciente.get("NivelRiesgoDesercion")
+  mapa_nivel_simple = {0: "🟢 0 - Bajo", 1: "🟡 1 - Medio", 2: "🔴 2 - Alto"}
+  riesgo_str = mapa_nivel_simple.get(riesgo_val, "Sin Registro Fin")
 
   col_m1, col_m2, col_m3, col_m4 = st.columns(4)
-  col_m1.metric("Docentes Registrados", docentes)
-  col_m2.metric("Personal Administrativo", admin)
-  col_m3.metric("Estudiantes al Inicio", estud)
-  col_m4.metric("Estudiantes con Discapacidad", discap)
+  col_m1.metric("Estudiantes Inicio", estud_ini)
+  col_m2.metric("Estudiantes Fin", estud_fin)
+  col_m3.metric("Tasa de abandono", tasa_ab_str)
+  col_m4.metric("Nivel de riesgo real", riesgo_str)
 
   # Ubicación y características administrativas
-  prov = registro_actual.get("Provincia", registro_actual.get("Provincia_inicio", "Desconocida"))
-  cant = registro_actual.get("Canton", registro_actual.get("Canton_inicio", "Desconocido"))
-  parr = registro_actual.get("Parroquia", registro_actual.get("Parroquia_inicio", "Desconocida"))
-  sost = registro_actual.get("Sostenimiento", registro_actual.get("Sostenimiento_inicio", "Desconocido"))
-  area = registro_actual.get("Área", registro_actual.get("Area", "Desconocida"))
-  jorn = registro_actual.get("Jornada", registro_actual.get("Jornada_inicio", "Desconocida"))
-  regi = registro_actual.get("Regimen_Escolar", registro_actual.get("Regimen_Escolar_inicio", "Desconocido"))
-  moda = registro_actual.get("Modalidad", registro_actual.get("Modallidad", "Desconocida"))
+  prov = registro_reciente.get("Provincia", registro_reciente.get("Provincia_inicio", "Desconocida"))
+  cant = registro_reciente.get("Canton", registro_reciente.get("Canton_inicio", "Desconocido"))
+  parr = registro_reciente.get("Parroquia", registro_reciente.get("Parroquia_inicio", "Desconocida"))
+  sost = registro_reciente.get("Sostenimiento", registro_reciente.get("Sostenimiento_inicio", "Desconocido"))
+  area = registro_reciente.get("Área", registro_reciente.get("Area", "Desconocida"))
+  jorn = registro_reciente.get("Jornada", registro_reciente.get("Jornada_inicio", "Desconocida"))
+  regi = registro_reciente.get("Regimen_Escolar", registro_reciente.get("Regimen_Escolar_inicio", "Desconocido"))
+  moda = registro_reciente.get("Modalidad", registro_reciente.get("Modallidad", "Desconocida"))
 
   col_d1, col_d2, col_d3 = st.columns(3)
-  col_d1.markdown(f"📍 **Ubicación:** {prov} / {cant} / {parr}")
-  col_d2.markdown(f"🏢 **Sostenimiento:** {sost}")
-  col_d3.markdown(f"🌲 **Área Geográfica:** {area}")
+  col_d1.markdown(f"**Ubicación:** {prov} / {cant} / {parr}")
+  col_d2.markdown(f"**Sostenimiento:** {sost}")
+  col_d3.markdown(f"**Área Geográfica:** {area}")
 
   col_d4, col_d5, col_d6 = st.columns(3)
-  col_d4.markdown(f"⏰ **Jornada:** {jorn}")
-  col_d5.markdown(f"📚 **Régimen Escolar:** {regi}")
-  col_d6.markdown(f"🎓 **Modalidad:** {moda}")
+  col_d4.markdown(f"**Jornada:** {jorn}")
+  col_d5.markdown(f"**Régimen Escolar:** {regi}")
+  col_d6.markdown(f"**Modalidad:** {moda}")
 
   st.markdown("<br>", unsafe_allow_html=True)
 
-  # -------------------------------------------------------------
-  # Tabla de Registros Históricos Reales
-  # -------------------------------------------------------------
-  st.markdown(f"#### 📊 Historial Operativo Consolidado (Periodo 2009-2010 hasta {anio_base_seleccionado})")
-
   # Formatear columnas para visualización clara
-  col_anio_presente = next((c for c in df_historico_visible.columns if "lectivo" in c.lower()), "Año_lectivo")
+  col_anio_presente = next((c for c in df_inst_todos.columns if "lectivo" in c.lower()), "Año_lectivo")
   columnas_mostrar = {
       col_anio_presente: "Año Lectivo",
       "Total_Docentes": "Docentes",
-      "Total_Administrativos": "Administrativos",
       "Total_Estudiantes_inicio": "Estudiantes Inicio",
-      "Estudiantes_con_discapacidad": "Con Discapacidad",
       "Total_Estudiantes_Fin": "Estudiantes Fin",
       "Promovidos": "Promovidos",
-      "No promovidos": "No Promovidos",
-      "Abandono": "Casos Abandono",
-      "Tasa_Abandono": "Tasa Abandono Real",
-      "NivelRiesgoDesercion": "Nivel de Riesgo Real",
+      "No promovidos": "No promovidos",
+      "Abandono": "Casos de abandono",
+      "Tasa_Abandono": "Tasa de abandono",
+      "NivelRiesgoDesercion": "Nivel de riesgo real",
   }
 
-  cols_presentes = [c for c in columnas_mostrar.keys() if c in df_historico_visible.columns]
-  df_tabla_display = df_historico_visible[cols_presentes].copy()
+  cols_presentes = [c for c in columnas_mostrar.keys() if c in df_inst_todos.columns]
+  df_tabla_display = df_inst_todos[cols_presentes].copy()
 
   # Mapear etiquetas legibles sobre las columnas existentes
   mapa_nivel_texto = {0: "🟢 0 - Bajo", 1: "🟡 1 - Medio", 2: "🔴 2 - Alto"}
@@ -712,23 +626,45 @@ with tab1:
   df_tabla_display.rename(columns={k: v for k, v in columnas_mostrar.items() if k in df_tabla_display.columns}, inplace=True)
 
   st.dataframe(df_tabla_display, use_container_width=True, hide_index=True)
-  st.caption(f"ℹ️ **Control Temporal:** Mostrando estrictamente {len(df_tabla_display)} registro(s) histórico(s) hasta el año {anio_base_seleccionado}. Para ver más años en el historial, cambie el 'Año Base de Análisis' arriba.")
+  st.caption(f"Mostrando todos los {len(df_tabla_display)} registro(s) histórico(s) disponibles.")
 
   st.divider()
 
   # -------------------------------------------------------------
-  # 2. PREDICCIÓN PARA EL AÑO SIGUIENTE (T + 1)
+  # 2. PREDICCIÓN DE DESERCIÓN ESCOLAR
   # -------------------------------------------------------------
+  st.subheader("2. Prediccion de desercion escolar")
+
+  # Layout con selector de año y selector de modelo
+  col_s1, col_s2 = st.columns([1, 1])
+
+  with col_s1:
+    idx_default_anio = len(anios_inst) - 2 if len(anios_inst) >= 2 else 0
+    anio_base_seleccionado = st.selectbox(
+        "Seleccione el Año Base de Análisis (T):",
+        options=anios_inst,
+        index=idx_default_anio,
+        help="Los datos hasta este año se utilizarán como base histórica para la predicción."
+    )
+
+  with col_s2:
+    modelo_seleccionado_nombre = st.selectbox(
+        "Seleccione el Modelo de Inteligencia Artificial para la Predicción:",
+        options=list(diccionario_modelos.keys()),
+        index=0,
+        help="Permite generar y comparar la predicción utilizando cualquiera de los modelos evaluados."
+    )
+
   anio_siguiente = obtener_siguiente_periodo(anio_base_seleccionado, anios_todos_dataset)
 
-  st.subheader(f"2. Predicción de Deserción Escolar para el Año Siguiente ({anio_siguiente})")
+  st.markdown(f"#### Predicción para el Año Siguiente ({anio_siguiente})")
 
   st.markdown(f"""
-  Se utilizará el modelo **{modelo_seleccionado_nombre}** alimentado con las características de inicio de ciclo del periodo **{anio_siguiente}** (o proyección operativa) para clasificar el nivel de riesgo preventivo.
+  Se utilizará el modelo **{modelo_seleccionado_nombre}** alimentado con las características de inicio de ciclo del periodo **{anio_siguiente}** para clasificar el nivel de riesgo preventivo.
   """)
 
   # Botón de Predicción
-  boton_predecir = st.button(f"🔮 Predecir Deserción para el Año {anio_siguiente} con {modelo_seleccionado_nombre}")
+  boton_predecir = st.button(f"Predecir Deserción para el Año {anio_siguiente} con {modelo_seleccionado_nombre}")
 
   # Estado de sesión para persistir la predicción al cambiar entre pestañas o modelos
   if boton_predecir:
@@ -767,9 +703,9 @@ with tab1:
     clase_predicha = predecir_con_modelo(modelo_obj, X_inferencia)
 
     riesgo_etiquetas = {
-        0: ("BAJO RIESGO DE DESERCIÓN", "callout-success", "🟢"),
-        1: ("RIESGO MEDIO DE DESERCIÓN", "callout-warning", "🟡"),
-        2: ("ALTO RIESGO DE DESERCIÓN", "callout-error", "🔴"),
+        0: ("BAJO RIESGO DE DESERCIÓN", "callout-success", ""),
+        1: ("RIESGO MEDIO DE DESERCIÓN", "callout-warning", ""),
+        2: ("ALTO RIESGO DE DESERCIÓN", "callout-error", ""),
     }
 
     etiqueta_pred, callout_pred, icono_pred = riesgo_etiquetas[clase_predicha]
@@ -792,27 +728,15 @@ with tab1:
       estud_fin_val = int(fila_siguiente["Total_Estudiantes_Fin"])
       abandono_val = int(fila_siguiente["Abandono"])
 
-      col_res1, col_res2, col_res3, col_res4 = st.columns(4)
+      # Fila 1: Predicciones
+      col_res1, col_res2 = st.columns(2)
       col_res1.metric("Modelo Utilizado", modelo_a_usar_nombre)
-      col_res2.metric("Nivel Predicho por IA", f"{icono_pred} {etiqueta_pred}")
-      col_res3.metric("Nivel Real Histórico", f"{icono_real} {etiqueta_real}")
-      col_res4.metric("Tasa Real al Cierre", f"{tasa_real_val:.2f}% ({abandono_val} de {estud_fin_val})")
+      col_res2.metric("Nivel Predicho por modelo", etiqueta_pred)
 
-      # Comparativa de concordancia
-      if clase_predicha == clase_real:
-        st.markdown(f"""
-        <div class="callout-success">
-            <b>🎯 Acierto Exacto del Modelo ({modelo_a_usar_nombre}):</b><br>
-            El modelo anticipó exitosamente la categoría de <b>{etiqueta_pred}</b> para el año lectivo {anio_siguiente}, coincidiendo con el registro oficial de fin de ciclo del MINEDUC.
-        </div>
-        """, unsafe_allow_html=True)
-      else:
-        st.markdown(f"""
-        <div class="callout-warning">
-            <b>📊 Comparativa de Estimación ({modelo_a_usar_nombre}):</b><br>
-            El modelo clasificó preventivamente la institución como <b>{etiqueta_pred}</b> frente a un registro real consolidado de <b>{etiqueta_real}</b> (Tasa real: {tasa_real_val:.2f}%).
-        </div>
-        """, unsafe_allow_html=True)
+      # Fila 2: Datos Reales
+      col_real1, col_real2 = st.columns(2)
+      col_real1.metric("Nivel Real Histórico", etiqueta_real)
+      col_real2.metric("Tasa Real al Cierre", f"{tasa_real_val:.2f}% ({abandono_val} de {estud_fin_val})")
 
     else:
       # -------------------------------------------------------------
@@ -820,45 +744,22 @@ with tab1:
       # -------------------------------------------------------------
       col_f1, col_f2 = st.columns([1, 1])
       col_f1.metric("Modelo Utilizado", modelo_a_usar_nombre)
-      col_f2.metric("Nivel Predicho por IA", f"{icono_pred} {etiqueta_pred}")
-
-      st.markdown(f"""
-      <div class="callout-info">
-          <b>🔒 Restricción de Datos Futuros — Predicción Preventiva 100% Ciega:</b><br>
-          Para el periodo escolar <b>{anio_siguiente}</b>, el Ministerio de Educación aún no cuenta con registros de cierre de año (Promovidos / No promovidos / Abandono).<br>
-          La comparativa con datos reales se encuentra <b>automáticamente deshabilitada</b>, cumpliendo con la restricción estricta de no utilizar información futura y evitando el <i>data leakage</i>.
-      </div>
-      """, unsafe_allow_html=True)
-
-    # Botones de regeneración rápida con otros modelos
-    st.markdown("**🔄 Probar y regenerar predicción con otro modelo:**")
-    cols_btn = st.columns(len(diccionario_modelos))
-    for idx, (m_nombre, m_inst) in enumerate(diccionario_modelos.items()):
-      with cols_btn[idx]:
-        if st.button(m_nombre.split(" (")[0], key=f"btn_quick_{idx}"):
-          st.session_state["prediccion_activa"] = {
-              "amie": amie_activo,
-              "anio_base": anio_base_seleccionado,
-              "anio_sig": anio_siguiente,
-              "modelo_nombre": m_nombre
-          }
-          st.rerun()
+      col_f2.metric("Nivel Predicho por modelo", etiqueta_pred)
 
 # -------------------------------------------------------------
 # TAB 2: Comparativa de Modelos (Layout Pulido y Mejorado)
 # -------------------------------------------------------------
 with tab2:
-  st.subheader("Evaluación Comparativa de Rendimiento (MLP Propio vs. 5 Modelos de Línea Base)")
+  st.subheader("Evaluación Comparativa de Rendimiento")
   st.caption("Validación rigurosa sobre el conjunto de prueba cronológico (Hold-out temporal con datos posteriores a 2024).")
 
   # Métricas de resumen en tarjetas superiores
   mejor_modelo_f1 = df_baseline.sort_values("F1-Score (Macro)", ascending=False).iloc[0]
   mejor_modelo_acc = df_baseline.sort_values("Accuracy", ascending=False).iloc[0]
 
-  col_kpi1, col_kpi2, col_kpi3 = st.columns(3)
-  col_kpi1.metric("Total Modelos Evaluados", len(df_baseline))
-  col_kpi2.metric("Mejor F1-Score (Macro)", f"{mejor_modelo_f1['F1-Score (Macro)']*100:.2f}%", f"{mejor_modelo_f1['Modelo']}")
-  col_kpi3.metric("Mejor Exactitud (Accuracy)", f"{mejor_modelo_acc['Accuracy']*100:.2f}%", f"{mejor_modelo_acc['Modelo']}")
+  col_kpi1, col_kpi2 = st.columns(2)
+  col_kpi1.metric("Mejor F1-Score (Macro)", f"{mejor_modelo_f1['F1-Score (Macro)']*100:.2f}%", f"{mejor_modelo_f1['Modelo']}")
+  col_kpi2.metric("Mejor Exactitud (Accuracy)", f"{mejor_modelo_acc['Accuracy']*100:.2f}%", f"{mejor_modelo_acc['Modelo']}")
 
   st.divider()
 
@@ -866,16 +767,15 @@ with tab2:
   col_grid1, col_grid2 = st.columns([1, 1])
 
   with col_grid1:
-    st.markdown("#### 📋 Tabla Comparativa de Métricas")
+    st.markdown("#### Tabla Comparativa de Métricas")
     st.dataframe(
         df_baseline.style.highlight_max(subset=["Accuracy", "Precision (Macro)", "Recall (Macro)", "F1-Score (Macro)"], color="#BFDBFE"),
         use_container_width=True,
         hide_index=True
     )
-    st.info("💡 **Nota Metodológica:** Todas las métricas fueron calculadas aplicando partición temporal y ponderación de clases (`class_weight='balanced'`) para garantizar equidad ante el desbalance natural de la deserción.")
 
   with col_grid2:
-    st.markdown("#### 📊 Comparativa de F1-Score (Macro)")
+    st.markdown("#### Comparativa de F1-Score (Macro)")
     
     # Gráfico con matplotlib para mayor control estético y consistencia
     fig_comp, ax_comp = plt.subplots(figsize=(7, 4.2))
@@ -927,24 +827,4 @@ with tab3:
       fig = explainer.generar_grafico_resumen(X_test, n_samples=15)
       st.pyplot(fig)
 
-# Pie de página institucional MINEDUC Ecuador
-st.markdown("""
-<div class="mineduc-footer">
-    <div class="mineduc-footer-links">
-        <span><b>Módulos del Sistema:</b></span>
-        <span>•</span>
-        <span>Semáforo de Riesgo y Predicción T+1</span>
-        <span>•</span>
-        <span>Comparativa de 6 Modelos IA</span>
-        <span>•</span>
-        <span>Explicabilidad SHAP</span>
-        <span>•</span>
-        <span>Registros Abiertos MINEDUC (2009 - 2026)</span>
-    </div>
-    <div class="mineduc-footer-info">
-        <b>Sistema de Alerta Temprana de Deserción Escolar</b> • Proyecto IA - Grupo 9<br>
-        Desarrollado con Perceptrón Multicapa (MLP en Keras), 5 Modelos de Línea Base y SHAP Explainer<br>
-        Fuente de Datos: Registros Administrativos Históricos Abiertos del Ministerio de Educación de Ecuador (2009 - 2026)
-    </div>
-</div>
-""", unsafe_allow_html=True)
+
