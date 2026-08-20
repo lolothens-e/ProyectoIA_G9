@@ -1,3 +1,18 @@
+import sys
+# Solución para bug en Python 3.13 + Streamlit + tqdm:
+# Streamlit establece sys.stderr.flush y sys.stdout.flush en None, lo que genera un TypeError
+# en tqdm. Reemplazamos con un lambda dummy si es None.
+if sys.stderr is not None and getattr(sys.stderr, "flush", None) is None:
+  try:
+    sys.stderr.flush = lambda: None
+  except Exception:
+    pass
+if sys.stdout is not None and getattr(sys.stdout, "flush", None) is None:
+  try:
+    sys.stdout.flush = lambda: None
+  except Exception:
+    pass
+
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -18,7 +33,19 @@ class SHAPExplainer:
     base
     :param feature_names: Nombres de las variables/características procesadas
     """
-    self.predict_fn = model_predict_fn
+    # Optimizar el método de predicción si es un modelo de Keras (hasta 20x más rápido)
+    if hasattr(model_predict_fn, "__self__"):
+      keras_model = model_predict_fn.__self__
+      if hasattr(keras_model, "call") and hasattr(keras_model, "predict"):
+        def fast_predict(x):
+          x_arr = np.asarray(x, dtype=np.float32)
+          return keras_model(x_arr, training=False).numpy()
+        self.predict_fn = fast_predict
+      else:
+        self.predict_fn = model_predict_fn
+    else:
+      self.predict_fn = model_predict_fn
+
     self.feature_names = feature_names
 
     # Usamos una muestra de fondo de máximo 30 instancias para acelerar el cálculo
